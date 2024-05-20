@@ -1,0 +1,81 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Image Processing</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Image Processing</h1>-->
+<!--<form id="imageForm">-->
+<!--    <label for="imagePath">Enter Image Path:</label>-->
+<!--    <input type="text" id="imagePath" name="imagePath" required>-->
+<!--    <button type="submit">Process Image</button>-->
+<!--</form>-->
+
+<!--<div id="result"></div>-->
+
+<!--<script src="scripts/main.js"></script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing</title>
+</head>
+<body>
+<h1>Image Processing</h1>
+<form id="imageForm" enctype="multipart/form-data">
+    <label for="imageInput">Select Image:</label>
+    <input type="file" id="imageInput" name="image" accept=".jpg, .jpeg, .png">
+    <br>
+    <label for="imagePathInput">Or enter image path:</label>
+    <input type="text" id="imagePathInput" name="imagePath">
+    <br>
+    <button type="button" onclick="submitImage()">Submit</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+    function submitImage() {
+        const formData = new FormData();
+        const imageFile = document.getElementById('imageInput').files[0];
+        const imagePath = document.getElementById('imagePathInput').value.trim();
+
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else if (imagePath) {
+            formData.append('imagePath', imagePath);
+        } else {
+            alert('Please select an image or enter its path.');
+            return;
+        }
+
+        fetch('/api/v1/images/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to process image');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('result').innerText = data.message;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('result').innerText = 'Error: ' + error.message;
+        });
+    }
+</script>
+</body>
+</html>
